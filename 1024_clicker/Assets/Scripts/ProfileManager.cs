@@ -9,7 +9,6 @@ public class ProfileManager : MonoBehaviour
 
     private DatabaseReference databaseRef;
     private DatabaseReference usersRef;
-    
     private UserProfile cachedProfile;
     public UserProfile CachedProfile => cachedProfile;
     private void Awake()
@@ -66,7 +65,7 @@ public class ProfileManager : MonoBehaviour
         }
     }
 
-    public async UniTask<(UserProfile profile, string error)> LoadProfileAsync(string nickname)
+    public async UniTask<(UserProfile profile, string error)> LoadProfileAsync()
     {
         if (!AuthManager.Instance.IsLoggedIn)
         {
@@ -77,7 +76,7 @@ public class ProfileManager : MonoBehaviour
 
         try
         {
-            Debug.Log($"[Profile] 프로필 저장 시도... {nickname}");
+            Debug.Log($"[Profile] 프로필 로드 시도...");
             DataSnapshot snapshot = await usersRef.Child(userId).GetValueAsync().AsUniTask();
 
             if (!snapshot.Exists)
@@ -90,12 +89,12 @@ public class ProfileManager : MonoBehaviour
             string json = snapshot.GetRawJsonValue();
             cachedProfile = UserProfile.FromJson(json);
 
-            Debug.Log($"[Profile] 프로필 로드 성공 {nickname}");
+            Debug.Log($"[Profile] 프로필 로드 성공 ");
             return (cachedProfile, null);
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"[Profile] 프로필 로드 실패 {nickname} : {ex.Message}");
+            Debug.LogError($"[Profile] 프로필 로드 실패 {ex.Message}");
             return (null, ex.Message);
         }
     }
@@ -129,6 +128,7 @@ public class ProfileManager : MonoBehaviour
         }
     }
 
+    // 프로필 존재 여부 확인
     public async UniTask<bool> ProfileExisAsync()
     {
         if (!AuthManager.Instance.IsLoggedIn)

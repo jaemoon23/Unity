@@ -6,24 +6,30 @@ using UnityEngine.UI;
 
 public class LoginUI : MonoBehaviour
 {
+    [Header("Panels")]
     [SerializeField] private GameObject loginPanel;
+    [SerializeField] private GameObject createNicknamePanel;
+    // Profile
+    [SerializeField] private GameObject profileButtonObject;
 
-    // 버튼
+
+    [Header("Buttons")]
+    // Login & Create & Guest
     [SerializeField] private Button loginButton;
     [SerializeField] private Button createButton;
     [SerializeField] private Button guestButton;
+
+     
     
 
-    // 인풋필드
+    [Header("Input Fields")]
     [SerializeField] private TMP_InputField emailInputField;
     [SerializeField] private TMP_InputField passwordInputField;
 
-    // 에러 텍스트
+    [Header("Texts")]
     [SerializeField] private TextMeshProUGUI errorText;
-
-
-    [SerializeField] private Button profileButton;
-    [SerializeField] private TextMeshProUGUI profileText;
+    [SerializeField] private TextMeshProUGUI profileUIDText;
+ 
 
     private async UniTaskVoid Start()
     {
@@ -33,12 +39,6 @@ public class LoginUI : MonoBehaviour
         loginButton.onClick.AddListener(() => OnLoginButtonClicked().Forget());
         createButton.onClick.AddListener(() => OnCreateButtonClicked().Forget());
         guestButton.onClick.AddListener(() => OnGuestButtonButtonClicked().Forget());
-        profileButton.onClick.AddListener(() =>
-            {
-                AuthManager.Instance.SignOut();
-                UpdateUI().Forget();
-            }
-        );
 
         SetButtonInteractivity(true);
 
@@ -56,12 +56,11 @@ public class LoginUI : MonoBehaviour
 
         if (IsLoggedIn)
         {
-            string userId = AuthManager.Instance.UserId;
-            profileText.text = userId;
+            profileButtonObject.SetActive(true);
         }
         else
         {
-            profileText.text = string.Empty;
+            profileButtonObject.SetActive(false);
         }
         errorText.text = string.Empty;
     }
@@ -77,6 +76,7 @@ public class LoginUI : MonoBehaviour
         if (success)
         {
             Debug.Log("[LoginUI] 로그인 성공");
+            loginPanel.SetActive(false);
         }
         else
         {
@@ -114,6 +114,7 @@ public class LoginUI : MonoBehaviour
         if (success)
         {
             Debug.Log("[LoginUI] 익명 로그인 성공");
+            loginPanel.SetActive(false);
         }
         else
         {
