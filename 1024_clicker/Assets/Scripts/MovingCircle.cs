@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class MovingCircle : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class MovingCircle : MonoBehaviour
     private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     private int timer = 10;
     private int currentScore;
+    public int CurrentScore => currentScore;
 
     public GameObject startUI;
     public Button startButton;
@@ -38,7 +40,7 @@ public class MovingCircle : MonoBehaviour
         endButton.onClick.AddListener(() =>
         {
             endUI.SetActive(false);
-            UpdateMove().Forget();
+            startUI.SetActive(true);
             timer = 10;
             currentScore = 0;
             scoreText.text = "점수 : " + currentScore.ToString();
@@ -90,6 +92,19 @@ public class MovingCircle : MonoBehaviour
                 cancellationTokenSource.Cancel();
                 timerText.text = "시간 종료!";
                 finalScoreText.text = "점수 : " + currentScore.ToString();
+            
+                // ScoreManager 초기화 대기
+                await UniTask.WaitUntil(() => ScoreManager.Instance != null);
+                
+                if (AuthManager.Instance != null && AuthManager.Instance.IsLoggedIn)
+                {
+                    await ScoreManager.Instance.SaveScoreAsync(currentScore);
+                }
+                else
+                {
+                    Debug.LogWarning("[MovingCircle] 로그인되지 않음 - 점수 저장 안함");
+                }
+                
                 endUI.SetActive(true);
             }
         }

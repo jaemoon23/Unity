@@ -30,7 +30,7 @@ public class ProfileUI : MonoBehaviour
         logoutButton.onClick.AddListener(() => OnLogoutButtonClicked());
         closeProfileButton.onClick.AddListener(() => ProfilePanel.SetActive(false));
     }
-    
+
     public async UniTaskVoid UpdateUI()
     {
         // 프로필 UI 업데이트
@@ -44,17 +44,26 @@ public class ProfileUI : MonoBehaviour
         if (await ProfileManager.Instance.ProfileExisAsync())
         {
             UpdateUI().Forget();
-            ProfilePanel.SetActive(true);
         }
         else
         {
-            createNicknamePanel.SetActive(true);
+            nickNameText.text = "(없음)";
         }
+        ProfilePanel.SetActive(true);
     }
 
-    private void OnEditNicknameButtonClicked()
+    private async UniTaskVoid OnEditNicknameButtonClicked()
     {
-        EditNicknamePanel.SetActive(true);
+        if (await ProfileManager.Instance.ProfileExisAsync())
+        {
+            // 프로필이 있으면 편집 패널로
+            EditNicknamePanel.SetActive(true);
+        }
+        else
+        {
+            // 프로필이 없으면 생성 패널로
+            createNicknamePanel.SetActive(true);
+        }
         ProfilePanel.SetActive(false);
     }
     
