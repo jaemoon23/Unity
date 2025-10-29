@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// 이진 탐색 트리
@@ -173,7 +174,7 @@ public class BinarySearchTree<TKey, TValue> : IDictionary<TKey, TValue> where TK
 
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
     {
-        return InOrderTraversal().GetEnumerator();  // 중위 순회 열거자 반환
+        return InOrderTraversal().GetEnumerator();
     }
 
     /// <summary>
@@ -356,20 +357,17 @@ public class BinarySearchTree<TKey, TValue> : IDictionary<TKey, TValue> where TK
 
     protected virtual IEnumerable<KeyValuePair<TKey, TValue>> PostOrderTraversal(TreeNode<TKey, TValue> node)
     {
-        if (node != null)
+        foreach (var kvp in PostOrderTraversal(node.Left))
         {
-            foreach (var kvp in PostOrderTraversal(node.Left))
-            {
-                yield return kvp;   // 왼쪽 서브트리 방문
-            }
-
-            foreach (var kvp in PostOrderTraversal(node.Right))
-            {
-                yield return kvp;   // 오른쪽 서브트리 방문
-            }
-
-            yield return new KeyValuePair<TKey, TValue>(node.Key, node.Value);  // 현재 노드 방문
+            yield return kvp;
         }
+
+        foreach (var kvp in PostOrderTraversal(node.Right))
+        {
+            yield return kvp;
+        }
+
+        yield return new KeyValuePair<TKey, TValue>(node.Key, node.Value);
     }
 
     /// <summary>
@@ -382,30 +380,29 @@ public class BinarySearchTree<TKey, TValue> : IDictionary<TKey, TValue> where TK
 
     protected virtual IEnumerable<KeyValuePair<TKey, TValue>> LevelOrderTraversal(TreeNode<TKey, TValue> node)
     {
-        // 노드가 null이면 종료
         if (node == null)
         {
             yield break;
         }
 
-        // 큐를 사용하여 레벨 순회 구현
-        Queue<TreeNode<TKey, TValue>> queue = new Queue<TreeNode<TKey, TValue>>();  // 큐 생성
-        queue.Enqueue(node);    // 루트 노드를 큐에 추가
+        Queue<TreeNode<TKey, TValue>> queue = new Queue<TreeNode<TKey, TValue>>();
+        queue.Enqueue(node);
 
-        // 큐가 빌 때까지 반복
         while (queue.Count > 0)
         {
             TreeNode<TKey, TValue> current = queue.Dequeue();
-            yield return new KeyValuePair<TKey, TValue>(current.Key, current.Value);  // 현재 노드 방문
+            yield return new KeyValuePair<TKey, TValue>(current.Key, current.Value);
 
             if (current.Left != null)
             {
-                queue.Enqueue(current.Left);   // 왼쪽 자식 노드 큐에 추가
+                queue.Enqueue(current.Left);
             }
+            
             if (current.Right != null)
             {
-                queue.Enqueue(current.Right);  // 오른쪽 자식 노드 큐에 추가
+                queue.Enqueue(current.Right);
             }
+
         }
     }
 
