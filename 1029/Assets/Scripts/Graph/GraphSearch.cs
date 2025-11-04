@@ -133,11 +133,14 @@ public class GraphSearch
         var visited = new HashSet<GraphNode>();
         var pQueue = new PriorityQueue<GraphNode, int>();
         var distances = new int[graph.nodes.Length];
+
+        // 거리 배열 초기화
         for (int i = 0; i < distances.Length; ++i)
         {
             distances[i] = int.MaxValue;
         }
 
+        // 시작 노드 초기화
         distances[start.id] = start.weight;
         pQueue.Enqueue(start, distances[start.id]);
 
